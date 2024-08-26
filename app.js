@@ -5,9 +5,19 @@ const error = require("./middlewares/Error");
 
 const morgan = require("morgan");
 
+const cors = require("cors");
+
 const app = express();
 
 app.use(express.json());
+
+// Adding the cors middleware to allow cross-origin requests
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 
 app.use(morgan("dev"));
 
