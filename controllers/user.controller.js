@@ -1,3 +1,4 @@
+const errorHandler = require("../utils/Error");
 const User = require("../models/user.model");
 const bcryptjs = require("bcryptjs");
 
@@ -10,8 +11,8 @@ const userController = {
       await newUser.save();
       res.status(201).send({ message: "User created successfully" });
     } catch (error) {
-      // next(error);
-      res.status(500).send({ error: "Failed to create user" });
+      // next(errorHandler(500, "duplicate username"));
+      next(error);
     }
   },
 };

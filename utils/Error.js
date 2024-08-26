@@ -1,6 +1,9 @@
 // Creating a function to handle unknown endpoints
-const errorHandler = (request, response) => {
-  response.status(404).send({ error: "Kindly verify the endpoint." });
+const errorHandler = (statusCode, message) => {
+  const error = new Error();
+  error.statusCode = statusCode;
+  error.message = message;
+  return error;
 };
 
 // Exporting the function
