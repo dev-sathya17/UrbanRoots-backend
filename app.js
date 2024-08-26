@@ -7,6 +7,9 @@ const morgan = require("morgan");
 
 const cors = require("cors");
 
+// Importing the cookie parser library
+const cookieParser = require("cookie-parser");
+
 const app = express();
 
 app.use(express.json());
@@ -20,6 +23,8 @@ app.use(
 );
 
 app.use(morgan("dev"));
+
+app.use(cookieParser());
 
 app.use("/api/v1/users", userRouter);
 
