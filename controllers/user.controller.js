@@ -23,12 +23,12 @@ const userController = {
       const { email, password } = req.body;
       const user = await User.findOne({ email });
       if (!user) {
-        return next(new errorHandler(404, "User not found"));
+        return next(errorHandler(404, "User not found"));
       }
 
       const isPasswordValid = bcryptjs.compareSync(password, user.password);
       if (!isPasswordValid) {
-        return next(new errorHandler(401, "Invalid credentials!"));
+        return next(errorHandler(401, "Invalid credentials!"));
       }
 
       const token = jwt.sign({ id: user._id }, SECRET_KEY);
@@ -45,6 +45,53 @@ const userController = {
         .status(200)
         .json(data);
     } catch (error) {
+      next(error);
+    }
+  },
+  googleSignIn: async (req, res, next) => {
+    try {
+      const user = await User.findOne({ email: req.body.email });
+      console.log(user);
+      if (user) {
+        const token = jwt.sign({ id: user._id }, SECRET_KEY);
+        const { password: pass, ...data } = user._doc;
+        res
+          .cookie("token", token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+            expires: new Date(Date.now() + 24 * 3600000), // 24 hours from login
+            path: "/",
+          })
+          .status(200)
+          .json(data);
+      } else {
+        const generatedPassword = Math.random().toString(36).slice(-8);
+        const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
+        const newUser = new User({
+          username:
+            req.body.name.split(" ").join("").toLowerCase() +
+            Math.random().toString(36).slice(-4),
+          email: req.body.email,
+          password: hashedPassword,
+          avatar: req.body.photo,
+        });
+        await newUser.save();
+        const token = jwt.sign({ id: newUser._id }, SECRET_KEY);
+        const { password: pass, ...data } = newUser._doc;
+        res
+          .cookie("token", token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+            expires: new Date(Date.now() + 24 * 3600000), // 24 hours from login
+            path: "/",
+          })
+          .status(200)
+          .json(data);
+      }
+    } catch (error) {
+      console.log(error.message);
       next(error);
     }
   },
