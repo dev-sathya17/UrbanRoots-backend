@@ -8,5 +8,10 @@ userRouter.post("/signup", userController.signUp);
 userRouter.post("/signin", userController.signIn);
 userRouter.post("/google", userController.googleSignIn);
 userRouter.put("/update/:id", auth.isAuthenticated, userController.updateUser);
+userRouter.delete(
+  "/delete/:id",
+  auth.isAuthenticated,
+  userController.deleteUser
+);
 
 module.exports = userRouter;
