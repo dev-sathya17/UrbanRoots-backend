@@ -95,6 +95,36 @@ const userController = {
       next(error);
     }
   },
+  updateUser: async (request, response, next) => {
+    try {
+      if (request.user.id !== request.params.id)
+        return next(errorHandler(401, "You can only update your own account"));
+
+      if (request.body.password) {
+        request.body.password = bcryptjs.hashSync(request.body.password, 10);
+      }
+
+      const updatedUser = await User.findByIdAndUpdate(
+        request.params.id,
+        {
+          $set: {
+            username: request.body.username,
+            email: request.body.email,
+            avatar: request.body.avatar,
+            password: request.body.password,
+          },
+        },
+        {
+          new: true,
+        }
+      );
+
+      const { password, ...rest } = updatedUser._doc;
+      response.json(rest);
+    } catch (error) {
+      next(error);
+    }
+  },
 };
 
 module.exports = userController;

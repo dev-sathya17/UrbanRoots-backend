@@ -12,6 +12,8 @@ const cookieParser = require("cookie-parser");
 
 const app = express();
 
+app.use(cookieParser());
+
 app.use(express.json());
 
 // Adding the cors middleware to allow cross-origin requests
@@ -23,8 +25,6 @@ app.use(
 );
 
 app.use(morgan("dev"));
-
-app.use(cookieParser());
 
 app.use("/api/v1/users", userRouter);
 
